@@ -1,23 +1,19 @@
-name: Serveo SSH Terminal
+name: Pinggy SSH Terminal
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup SSH and Open Reverse Tunnel
+      - name: Setup SSH & Pinggy Tunnel
         run: |
-          # Root password set karo taaki termux se login ho sake
           echo "root:toor123" | sudo chpasswd
-          
-          # SSH config me password login allow karo
           sudo sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
           sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config || echo "PasswordAuthentication yes" | sudo tee -a /etc/ssh/sshd_config
           sudo systemctl restart ssh
           
           echo "=========================================="
-          echo "TUNNEL OPENING... CHECK SERVEO OUTPUT BELOW"
+          echo "PINGGY TUNNEL STARTING..."
           echo "=========================================="
           
-          # Serveo par reverse tunnel banao (port 22 forward karega)
-          ssh -o StrictHostKeyChecking=no -R 0:localhost:22 serveo.net
+          ssh -o StrictHostKeyChecking=no -p 443 -R 0:localhost:22 a.pinggy.io
