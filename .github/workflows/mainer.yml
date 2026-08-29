@@ -1,8 +1,11 @@
 name: Termux SSH Tmate
-on: workflow_dispatch # Manual trigger ke liye
+on: workflow_dispatch
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
+      - name: Install tmate manually
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tmate
+          tmate -F
