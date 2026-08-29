@@ -1,28 +1,23 @@
-name: Raw Tmate Terminal
+name: Serveo SSH Terminal
 on: workflow_dispatch
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install and Run Tmate Manually
+      - name: Setup SSH and Open Reverse Tunnel
         run: |
-          sudo apt-get update
-          sudo apt-get install -y tmate
+          # Root password set karo taaki termux se login ho sake
+          echo "root:toor123" | sudo chpasswd
           
-          # SSH key generate karlo taaki tmate prompt na maare
-          ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
-          
-          # Background me tmate session start karo socket ke sath
-          tmate -S /tmp/tmate.sock new-session -d
-          tmate -S /tmp/tmate.sock wait tmate-ready
+          # SSH config me password login allow karo
+          sudo sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+          sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config || echo "PasswordAuthentication yes" | sudo tee -a /etc/ssh/sshd_config
+          sudo systemctl restart ssh
           
           echo "=========================================="
-          echo "SSH CONNECTION:"
-          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
-          echo "WEB CONNECTION:"
-          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
+          echo "TUNNEL OPENING... CHECK SERVEO OUTPUT BELOW"
           echo "=========================================="
           
-          # Workflow zinda rahega taaki tu terminal use kar sake
-          sleep infinity
+          # Serveo par reverse tunnel banao (port 22 forward karega)
+          ssh -o StrictHostKeyChecking=no -R 22:localhost:22 serveo.net
