@@ -1,11 +1,28 @@
-name: Termux SSH Tmate
+name: Raw Tmate Terminal
 on: workflow_dispatch
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install tmate manually
+      - name: Install and Run Tmate Manually
         run: |
           sudo apt-get update
           sudo apt-get install -y tmate
-          tmate -F
+          
+          # SSH key generate karlo taaki tmate prompt na maare
+          ssh-keygen -q -t rsa -N "" -f ~/.ssh/id_rsa
+          
+          # Background me tmate session start karo socket ke sath
+          tmate -S /tmp/tmate.sock new-session -d
+          tmate -S /tmp/tmate.sock wait tmate-ready
+          
+          echo "=========================================="
+          echo "SSH CONNECTION:"
+          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+          echo "WEB CONNECTION:"
+          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
+          echo "=========================================="
+          
+          # Workflow zinda rahega taaki tu terminal use kar sake
+          sleep infinity
