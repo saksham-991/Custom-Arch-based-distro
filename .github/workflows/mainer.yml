@@ -20,4 +20,4 @@ jobs:
           echo "=========================================="
           
           # Serveo par reverse tunnel banao (port 22 forward karega)
-          ssh -o StrictHostKeyChecking=no -R 22:localhost:22 serveo.net
+          ssh -o StrictHostKeyChecking=no -R 0:localhost:22 serveo.net
